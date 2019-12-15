@@ -1,0 +1,111 @@
+import requests
+from scipy import  random
+
+response = requests.get("https://randomuser.me/api/?results=100")
+data = response.json()
+
+class user:
+    id=""
+    username=""
+    name=""
+    pln=random.randint(0, 100000)
+    btc=random.rand(1)*5
+    def generacja(self):
+
+        results = data['results']
+        results_no_list = results[0]
+
+        names = results_no_list['name']
+        login = results_no_list['login']
+
+        self.name = names['first'] + ' ' + names['last']
+        self.id = login['uuid']
+        self.username = login['username']
+        self.btc=random.randn(1)*3
+        self.pln=random.randint(0, 10000)
+    def wypis(self):
+        print("Autor username " + str(self.username))
+        print("Autor id " + str(self.id))
+        print("Autor name " + str(self.name))
+
+def wpis_wypis(a, b, c):
+    autor = user()
+    autor.id = a
+    autor.username = b
+    autor.name = c
+    autor.wypis()
+
+def gen(n):
+    users=[]
+    for i in range(n):
+        us1 = user()
+        us1.generacja()
+        users.append(us1)
+    return users
+
+def symulacja(t1, t2, users, n, api_name):
+    for i in range (t1):
+        response = requests.get(api_name)
+        data = response.json()
+        best_ask = data['ask']
+        print("Actuall BTC price "+ str(best_ask))
+
+        for j in range (t2):
+            indx1 = random.randint(0, n-1)
+            indx2 = random.randint(0, n-1)
+            while (indx2 == indx1):
+                indx2 = random.randint(0, n)-1
+
+            u1=users[indx1]
+            u2=users[indx2]
+            bitcoin=u1.btc
+            pln=u2.pln
+
+            if (pln!=0 ):
+
+                ilepln=random.randint(0, pln)
+                ilebtc=ilepln/best_ask
+
+                if(ilebtc< bitcoin):
+                   u1.btc=bitcoin-ilebtc
+                   u1.pln=u1.pln+ilepln
+                   u2.btc=u2.btc+ilebtc
+                   u2.pln = pln - ilepln
+                else:
+                    u1.btc=0
+                    u1.pln = u1.pln + ilepln
+                    u2.btc = u2.btc + ilebtc
+                    u2.pln=pln-ilepln
+            print(u1.username+ " exchanged "+str(ilebtc)+" BTC with "+ u2.username+ " for "+ str(ilepln) +" PLN")
+
+number_of_users=100
+US=gen(number_of_users)
+a_name="https://www.bitmarket.pl/json/BTCPLN/ticker.json"
+
+symulacja(10, 100, US, number_of_users, a_name)
+
+
+print("--------------------------------------------------")
+
+
+listabtc=[]
+listapln=[]
+for i in range (number_of_users):
+    jeden=US[i]
+    btc=jeden.btc
+    pln=jeden.pln
+    listabtc.append(btc)
+    listapln.append(pln)
+
+maxbtc=max(listabtc)
+maxpln=max(listapln)
+
+usbtc=US[listabtc.index(maxbtc)]
+uspln=US[listapln.index(maxpln)]
+
+namepln=usbtc.username
+namebtc=uspln.username
+print("User with the bigest amount of BTC is "+namebtc+" with amount  "+ str(maxbtc)+ " BTC")
+print("User with the bigest amount of PLN is "+namepln+" the amount is "+str(maxpln)+ " PLN")
+print("---------------------------------------------")
+wpis_wypis("242621", "kubahero", "Jakub Lesinski")
