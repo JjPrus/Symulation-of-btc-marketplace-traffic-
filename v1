@@ -1,0 +1,82 @@
+import requests
+
+# fetch data from  API
+response1 = requests.get("https://www.bitmarket.pl/json/BTCPLN/ticker.json")
+response2 = requests.get("https://bitbay.net/API/Public/BTCPLN/ticker.json")
+data1 = response1.json()
+data2 = response2.json()
+
+bid1=data1['bid']
+ask1=data1['ask']
+
+bid2=data2['bid']
+ask2=data2['ask']
+
+print('bid1:',bid1,'ask1:',ask1)
+print('bid2:',bid2,'ask2:',ask2)
+
+#im bid wiekszy tym bardziej oplaca sie spredawac
+#im ask mniejszy tym bardziej oplaca się kupowac
+
+def maxi (x, y):
+    if x>y:
+        return x
+    else:
+        if x==y:
+            print("BLAD, porownywane wartosci sa rowne")
+        return y
+
+class gielda:
+    name=""
+    bid=1.1
+    ask=1.1
+    def tworzenie_gield(self):
+        response = requests.get(self.name)
+        data = response.json()
+        bid = data['bid']
+        ask = data['ask']
+
+        self.ask = ask
+        self.bid = bid
+
+
+def por(g1, g2):
+    bid1=g1.bid
+    ask1=g1.ask
+    name1=g1.name
+
+    bid2=g2.bid
+    ask2=g2.ask
+    name2=g2.name
+
+    if max(bid1, bid2)==bid1:
+        if(bid2==bid1):
+            print("Obie gieldy sa rowne")
+        else:
+            print("Lepsza gielda do sprzedawania jest gielda "+name1)
+    else:
+        print ("Lepsza gielda do sprzedawania jest gielda "+name2)
+
+    if min(ask1, ask2)==ask1:
+        if (ask1==ask2):
+            print("Obie gieldy sa rowne")
+        else:
+            print ("Lepsza gielda do kupowania jest gielda "+name1)
+    else:
+        print ("Lepsza gielda do kupowania jest gielda "+name2)
+
+
+lista_gield_klasy_gielda=[]
+n=2
+
+nazwy=["https://www.bitmarket.pl/json/BTCPLN/ticker.json", "https://bitbay.net/API/Public/BTCPLN/ticker.json"]
+
+
+    for i in range (n):
+        g=gielda()
+        g.name=nazwy[i]
+        g.tworzenie_gield()
+        lista_gield_klasy_gielda.append(g)
+
+por(lista_gield_klasy_gielda[0], lista_gield_klasy_gielda[1])
+
